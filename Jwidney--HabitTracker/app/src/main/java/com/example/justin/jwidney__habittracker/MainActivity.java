@@ -41,12 +41,11 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
 
-    Intent addHabitintent = getIntent();
     String theName;
-    private static final String FILENAME = "file.sav";
+    private static final String FILENAME = "Habits.sav";
     private ArrayList<Habit> habitList = new ArrayList<>();
     private ArrayList<String> testList = new ArrayList<>();
-    private ArrayAdapter<Habit> adapter;
+    private ArrayAdapter<Habit> habitadapter;
     private ListView habitLayout;
 
 
@@ -64,20 +63,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        //testList.add("item1");
+        testList.add("item1");
         //testList.add("item2");
 
 
-        adapter = new ArrayAdapter<Habit>(this, R.layout.list_item, habitList);
+        habitadapter = new ArrayAdapter<Habit>(this, R.layout.list_item, habitList);
+
         habitLayout = (ListView) findViewById(R.id.habit_listview);
+        MyCustomAdapter adapter = new MyCustomAdapter(testList, this);
         habitLayout.setAdapter(adapter);
-        loadFromFile();
+
     }
 
 
     @Override
     protected void onStart() {
         // TODO Auto-generated method stub
+        loadFromFile();
         super.onStart();
 
 
@@ -125,10 +127,11 @@ public class MainActivity extends AppCompatActivity {
                 setResult(RESULT_OK);
                 String thename = habitName.getText().toString();
                 Habit newHabit = new Habit(thename);
-
                 habitList.add(newHabit);
-                saveInFile();
-                adapter.notifyDataSetChanged();
+                
+
+                saveInFile(thename,date);
+                habitadapter.notifyDataSetChanged();
                 dialog.dismiss();
 
             }
@@ -137,16 +140,16 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void saveInFile() {
+    private void saveInFile(String text,String date) {
         try {
-            FileOutputStream fos = openFileOutput(FILENAME, 0);
-            OutputStreamWriter writer = new OutputStreamWriter(fos);
-            Gson gson = new Gson();
-            gson.toJson(habitList,writer);
-            writer.flush();
+            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_APPEND);
+            //OutputStreamWriter writer = new OutputStreamWriter(fos);
+            //Gson gson = new Gson();
+            //gson.toJson(habitList,writer);
+            //writer.flush();
 
-            //fos.write(new String(date + " | " + text).getBytes());
-            //fos.close();
+            fos.write(new String(date + " | " + text).getBytes());
+            fos.close();
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -158,27 +161,27 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void loadFromFile() {
+
         ArrayList<String> habits = new ArrayList<String>();
         try {
             FileInputStream fis = openFileInput(FILENAME);
             BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-            Gson gson = new Gson();
+            //Gson gson = new Gson();
 
             //Code Taken from http://stackoverflow.com/questions/12384064/gson-convert-from-json-to-a-typed-arraylistt
-            habitList = gson.fromJson(in,new TypeToken<ArrayList<Habit>>(){}.getType());
-
-            /*String line = in.readLine();
+            //habitList = gson.fromJson(in,new TypeToken<ArrayList<Habit>>(){}.getType());
+            String line = in.readLine();
             while (line != null) {
-                habits.add(line);
+                testList.add(line);
                 line = in.readLine();
-            }*/
+            }
 
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
-            throw new RuntimeException();
+            e.printStackTrace();
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            throw new RuntimeException();
+            e.printStackTrace();
         }
         //return habits.toArray(new String[habits.size()]);
     }
