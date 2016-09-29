@@ -32,6 +32,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -41,21 +44,20 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
 
-    String theName;
-    private static final String FILENAME = "Habits.sav";
     private ArrayList<Habit> habitList = new ArrayList<>();
+
+    String habitName;
+    private static final String FILENAME = "HabitsFile.sav";
     private ArrayList<String> testList = new ArrayList<>();
     private ArrayAdapter<Habit> habitadapter;
     private ListView habitLayout;
+    private String tempname;
 
 
     //http://stackoverflow.com/questions/2942857/how-to-convert-current-date-into-string-in-java
     String date = new SimpleDateFormat("MM--dd--yyyy").format(new Date());
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,23 +65,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+
         testList.add("item1");
         //testList.add("item2");
 
 
-        habitadapter = new ArrayAdapter<Habit>(this, R.layout.list_item, habitList);
+        //habitadapter = new ArrayAdapter<Habit>(this, R.layout.list_item, habitList);
 
         habitLayout = (ListView) findViewById(R.id.habit_listview);
         MyCustomAdapter adapter = new MyCustomAdapter(testList, this);
         habitLayout.setAdapter(adapter);
 
+        loadFromFile();
+        initateList();
     }
 
 
     @Override
     protected void onStart() {
         // TODO Auto-generated method stub
-        loadFromFile();
         super.onStart();
 
 
@@ -128,10 +132,10 @@ public class MainActivity extends AppCompatActivity {
                 String thename = habitName.getText().toString();
                 Habit newHabit = new Habit(thename);
                 habitList.add(newHabit);
-                
 
-                saveInFile(thename,date);
-                habitadapter.notifyDataSetChanged();
+
+                saveInFile();
+                //habitadapter.notifyDataSetChanged();
                 dialog.dismiss();
 
             }
@@ -140,54 +144,65 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
-    private void saveInFile(String text,String date) {
-        try {
-            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_APPEND);
-            //OutputStreamWriter writer = new OutputStreamWriter(fos);
-            //Gson gson = new Gson();
-            //gson.toJson(habitList,writer);
-            //writer.flush();
 
-            fos.write(new String(date + " | " + text).getBytes());
-            fos.close();
+    private void saveInFile() {
+        try {
+
+            FileOutputStream fos = openFileOutput(FILENAME,0);
+            OutputStreamWriter writer = new OutputStreamWriter(fos);
+            Gson gson = new Gson();
+            gson.toJson(habitList, writer);
+            writer.flush();
+
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException();
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException();
         }
     }
+
+
+
+    private void initateList(){
+        for(Habit tempHabit: habitList) {
+            testList.add(tempHabit.getName());
+        }
+    }
+
 
 
     private void loadFromFile() {
 
-        ArrayList<String> habits = new ArrayList<String>();
         try {
             FileInputStream fis = openFileInput(FILENAME);
             BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-            //Gson gson = new Gson();
+            Gson gson = new Gson();
 
-            //Code Taken from http://stackoverflow.com/questions/12384064/gson-convert-from-json-to-a-typed-arraylistt
-            //habitList = gson.fromJson(in,new TypeToken<ArrayList<Habit>>(){}.getType());
-            String line = in.readLine();
-            while (line != null) {
-                testList.add(line);
-                line = in.readLine();
-            }
+            //Code taken from http://stackoverflow.com/questions/12384064/gson-convert-from-json-to-a-typed-arraylistt Sept.22,2016
+            Type listType = new TypeToken<ArrayList<Habit>>(){}.getType();
+            habitList = gson.fromJson(in, listType);
+
 
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            habitList = new ArrayList<>();
+
         } catch (IOException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException();
         }
-        //return habits.toArray(new String[habits.size()]);
     }
 
 
-
+    public void deleteHabit(String habitName) {
+        for (Habit tempHabit : habitList) {
+            if(tempHabit.getName() == habitName) {
+                habitList.remove(habitName);
+            }
+        }
+    }
 
 
 

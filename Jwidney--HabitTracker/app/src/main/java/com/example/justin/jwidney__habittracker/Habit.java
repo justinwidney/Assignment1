@@ -1,5 +1,6 @@
 package com.example.justin.jwidney__habittracker;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,7 +10,9 @@ import java.util.Locale;
 /**
  * Created by justin on 27/09/16.
  */
-public class Habit {
+public class Habit implements Serializable{
+
+    private static final long serialVersionUID = 1L;
 
     private ArrayList<String> Habits = new ArrayList();
     private String name;
@@ -17,12 +20,12 @@ public class Habit {
     String dayofWeek;
     private boolean[] days;
     private Calendar calendar = Calendar.getInstance();
-    SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.CANADA);
+    //SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.CANADA);
 
 
     public Habit(String name) {
         this.name = name;
-        this.dayofWeek = dayFormat.format(calendar.getTime());  // Day of Week in String eg. "Monday"
+       // this.dayofWeek = dayFormat.format(calendar.getTime());  // Day of Week in String eg. "Monday"
         this.days = new boolean[7];                             // Days of Week in Boolean form
         this.count = 0;                                         // Amount Completed
     }
@@ -52,6 +55,10 @@ public class Habit {
     public void setDays(boolean[] days) {
         this.days = days;
     }
+
+
+
+
 
 
     // Add Count

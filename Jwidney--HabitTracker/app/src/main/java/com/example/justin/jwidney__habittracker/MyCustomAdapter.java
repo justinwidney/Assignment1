@@ -22,7 +22,6 @@ public class MyCustomAdapter extends BaseAdapter implements ListAdapter {
     CharSequence text = "Habit Completed";
     int duration = Toast.LENGTH_SHORT;
 
-
     public MyCustomAdapter(ArrayList<String> list, Context context) {
 
         this.list = list;
@@ -67,6 +66,7 @@ public class MyCustomAdapter extends BaseAdapter implements ListAdapter {
                 //do something
                 list.remove(position); //or some other task
                 notifyDataSetChanged();
+
             }
         });
         addBtn.setOnClickListener(new View.OnClickListener(){
@@ -76,11 +76,13 @@ public class MyCustomAdapter extends BaseAdapter implements ListAdapter {
                 //developer guide toasts
                 Toast completedtoast = Toast.makeText(context,text,duration);
                 completedtoast.show();
-
                 notifyDataSetChanged();
             }
         });
 
         return view;
     }
+
+
+
 }
