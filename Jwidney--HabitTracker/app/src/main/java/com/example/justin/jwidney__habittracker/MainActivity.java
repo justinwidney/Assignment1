@@ -67,17 +67,11 @@ public class MainActivity extends AppCompatActivity {
         //testList.add("item1");
         //testList.add("item2");
 
-        habitLayout = (ListView) findViewById(R.id.habit_list_layout);
-        //MyCustomAdapter adapter = new MyCustomAdapter(testList,this);;
 
-        habitLayout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick (AdapterView<?> parent, View view,int position, long id){
-
-            }
-        });
-
+        adapter = new ArrayAdapter<Habit>(this, R.layout.list_item, habitList);
+        habitLayout = (ListView) findViewById(R.id.habit_listview);
+        habitLayout.setAdapter(adapter);
+        loadFromFile();
     }
 
 
@@ -86,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
         super.onStart();
 
-        adapter = new ArrayAdapter<Habit>(this, R.layout.habit_list_layout, habitList);
-        habitLayout.setAdapter(adapter);
+
+
     }
 
 
@@ -171,7 +165,6 @@ public class MainActivity extends AppCompatActivity {
             Gson gson = new Gson();
 
             //Code Taken from http://stackoverflow.com/questions/12384064/gson-convert-from-json-to-a-typed-arraylistt
-            //Type listType = new TypeToken<ArrayList<Habit>>(){}.getType();
             habitList = gson.fromJson(in,new TypeToken<ArrayList<Habit>>(){}.getType());
 
             /*String line = in.readLine();
