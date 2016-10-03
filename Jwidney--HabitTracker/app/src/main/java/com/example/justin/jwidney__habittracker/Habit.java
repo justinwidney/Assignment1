@@ -38,7 +38,8 @@ public class Habit implements Serializable{
         this.newDate = newDate;
         this.days = new boolean[7];
         this.count = 0;
-        this.date = date;
+        this.date = new Date();
+        this.newDate = newDate;
     }
 
 
