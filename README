@@ -2,3 +2,12 @@ My Habit Tracker for assignment #1
 
 Testing code:
 https://www.youtube.com/watch?v=YqUH8_xFxLM&feature=youtu.be
+
+
+Main Activities showcases Today's Habits, with a menu option to add new Habits. Those habits can be completed or deleted.
+A button can be pressed to goto a completed Activity, where all the habits are shown. Those can be deleted or a button can
+be pressed which shows all the habit completions.
+
+Coding was based of lonelyTwitter then tweaked to meet demands. Some code was sample off the internet which will be shown 
+by a commented hyperlink.
+
