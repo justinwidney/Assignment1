@@ -12,7 +12,6 @@ import java.util.Locale;
  */
 public class Habit implements Serializable{
 
-    private static final long serialVersionUID = 1L;
 
     private ArrayList<String> Habits = new ArrayList();
     private ArrayList<Date> completedRecord;
@@ -20,7 +19,7 @@ public class Habit implements Serializable{
 
     private String name;
     private int count;
-    String dayofWeek;
+    private String newDate;
     private boolean[] days;
     private Calendar calendar = Calendar.getInstance();
     private Date date;
@@ -34,9 +33,9 @@ public class Habit implements Serializable{
 
     }
 
-    public Habit(String name, Date date){
+    public Habit(String name, String newDate){
         this.name = name;
-        this.dayofWeek = dayofWeek;
+        this.newDate = newDate;
         this.days = new boolean[7];
         this.count = 0;
         this.date = date;
@@ -53,15 +52,11 @@ public class Habit implements Serializable{
         this.count = count;
     }
 
-    public void setDayofWeek(String dayofWeek) {
-        this.dayofWeek = dayofWeek;
+    public void setNewDate(String newDate){
+        this.newDate = newDate;
     }
 
-    public void setDays(boolean[] days) {
-        this.days = days;
-    }
-
-    public void setday(int position) {
+    public void setDay(int position) {
         days[position] = true;
     }
 
@@ -69,8 +64,8 @@ public class Habit implements Serializable{
         this.completedRecord.add(new Date());
     }
 
-    public void setCompletedRecord(ArrayList<Date> date){
-        completedRecord = date;
+    public void setCompletedRecord(ArrayList<Date> dates){
+        completedRecord = dates;
     }
 
     // Add Count
@@ -104,10 +99,6 @@ public class Habit implements Serializable{
 
     public int getCount(){
         return this.count;
-    }
-
-    public boolean[] getDays(){
-        return this.days;
     }
 
 

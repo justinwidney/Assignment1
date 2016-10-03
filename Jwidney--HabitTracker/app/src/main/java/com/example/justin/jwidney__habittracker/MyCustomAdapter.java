@@ -28,7 +28,6 @@ public class MyCustomAdapter extends BaseAdapter implements ListAdapter {
     private int duration = Toast.LENGTH_SHORT;
     private boolean[] days = new boolean[7];
     private int dayOfWeek;
-    private LayoutInflater inflater = null;
 
 
     public MyCustomAdapter(ArrayList<Habit> habitlist, int dayOfWeek, Context context) {
@@ -45,10 +44,6 @@ public class MyCustomAdapter extends BaseAdapter implements ListAdapter {
         this.context = context;
     }
 
-
-    public void setCurrentday(boolean[] currentday) {
-        this.days = currentday;
-    }
 
 
 
@@ -95,14 +90,11 @@ public class MyCustomAdapter extends BaseAdapter implements ListAdapter {
             public void onClick(View v) {
                String removedName = list.remove(position); //remove from view
 
-               for (Habit habit : habitList) {
+               for (Habit habit : habitList) {              //remove from habit
                     if(habit.getName() == removedName) {
                         habitList.remove(habit);
                     }
                 }
-
-
-                //habitList.remove(position); // remove from actual list
                 notifyDataSetChanged();
 
             }

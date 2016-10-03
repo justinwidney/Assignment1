@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private Calendar myCalendar = Calendar.getInstance();
     private ListView habitLayout;
 
-    String date = new SimpleDateFormat("MM--dd--yyyy").format(new Date());
+    String date = new SimpleDateFormat("yyyy--MM--dd").format(new Date());
 
     int dayOfWeek = myCalendar.get(Calendar.DAY_OF_WEEK)-1;
     public HabitArrayList habitArrayList = new HabitArrayList();
@@ -155,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final EditText habitName = new EditText(this);
+
         builder.setTitle("Add/Delete Habit");
         builder.setMessage(date);
         builder.setView(habitName);
@@ -169,13 +170,14 @@ public class MainActivity extends AppCompatActivity {
                 Habit newHabit = new Habit(thename);
 
 
-                secondHabbitMenu(newHabit,thename);
+                changeDateMenu(newHabit,thename);
                 dialog.dismiss();
 
 
 
             }
         })
+
 
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -189,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //http://www.learn-android-easily.com/2013/01/adding-check-boxes-in-dialog.html
-    public void secondHabbitMenu(Habit newHabit, final String thename) {
+    public void secondHabitMenu(Habit newHabit, final String thename) {
         final Habit habit = newHabit;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Set the days of the week");
@@ -199,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int indexSelected,
                                         boolean isChecked) {
                         if (isChecked) {
-                            habit.setday(indexSelected);
+                            habit.setDay(indexSelected);
                         }
 
                     }
@@ -223,6 +225,43 @@ public class MainActivity extends AppCompatActivity {
                 });
         builder.show();
     }
+
+
+   public void changeDateMenu(Habit newHabit, final String thename){
+       final Habit habit = newHabit;
+       AlertDialog.Builder builder = new AlertDialog.Builder(this);
+       builder.setTitle("Change Date?");
+       builder.setMessage("format yyyy-mm-dd");
+       final EditText differentDate = new EditText(this);
+       builder.setView(differentDate);
+               builder.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+
+                   @Override
+                   public void onClick(DialogInterface dialog, int id) {
+                       setResult(RESULT_OK);
+                       String newDate = differentDate.getText().toString();
+                       habit.setNewDate(newDate);
+
+
+                       secondHabitMenu(habit,thename);
+                       dialog.dismiss();
+
+
+
+                   }
+               })
+
+
+                       .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialog, int id) {
+                               //  Your code when user clicked on Cancel
+
+                           }
+                       });
+
+       builder.show();
+   }
 
 
    private void saveInFile() {

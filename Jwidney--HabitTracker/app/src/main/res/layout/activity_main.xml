@@ -28,7 +28,7 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
+        android:text="All Activities"
         android:id="@+id/startCompletionsBtn"
         android:layout_below="@+id/habit_listview"
         android:layout_toEndOf="@+id/textView" />
