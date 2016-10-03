@@ -16,7 +16,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
 
     //test get count
-    public void testGetCount(){
+    public void testgetCount(){
         Habit habit = new Habit("test");
         habit.addCount();
         habit.addCount();
@@ -24,6 +24,19 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertEquals(habit.getCount(),2);
 
     }
+    
+    //test set count
+    public void testsetCount(){
+     Habit habit = new Habit("test");
+        habit.setCount(5);
+        assertEquals(habit.getCount(),5);
+        
+    }
+    
+  
+    
+    
+    
     //test if completions words
     public void testaddCompletion(){
         Habit habit = new Habit("test");
