@@ -14,15 +14,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -36,28 +37,28 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
 
     private ArrayList<Habit> habitList = new ArrayList<>();
+    private final CharSequence[] days = {"S","M","T","W","Th","F","S",};
 
-    String habitName;
     private static final String FILENAME = "HabitsFile.sav";
-    private ArrayList<String> testList = new ArrayList<>();
-    private ArrayAdapter<Habit> habitadapter;
+    private MyCustomAdapter adapter;
+    private Calendar myCalendar = Calendar.getInstance();
     private ListView habitLayout;
-    private String tempname;
 
-
-    //http://stackoverflow.com/questions/2942857/how-to-convert-current-date-into-string-in-java
     String date = new SimpleDateFormat("MM--dd--yyyy").format(new Date());
 
-
+    int dayOfWeek = myCalendar.get(Calendar.DAY_OF_WEEK)-1;
+    public HabitArrayList habitArrayList = new HabitArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,19 +67,34 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        testList.add("item1");
-        //testList.add("item2");
-
-
-        //habitadapter = new ArrayAdapter<Habit>(this, R.layout.list_item, habitList);
-
         habitLayout = (ListView) findViewById(R.id.habit_listview);
-        MyCustomAdapter adapter = new MyCustomAdapter(testList, this);
+        loadFromFile();
+
+        adapter = new MyCustomAdapter(habitList, dayOfWeek, this);
         habitLayout.setAdapter(adapter);
 
-        loadFromFile();
-        initateList();
+
+        Button completionBtn = (Button) findViewById(R.id.startCompletionsBtn);
+
+
+
+       completionBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, CompletionsActivity.class);
+                    finish();
+                    habitArrayList.updateHabitList(habitList);
+                    intent.putExtra("dayOfWeek",dayOfWeek);
+                    MainActivity.this.startActivity(intent);
+
+
+            }
+        });
+
+
     }
+
 
 
     @Override
@@ -86,11 +102,10 @@ public class MainActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
         super.onStart();
 
-
-
     }
 
 
+    // Create the menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -98,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    // Handle When the (+) button is clicked
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -112,9 +128,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        habitList = habitArrayList.getHabitList();
+        adapter.notifyDataSetChanged();
 
 
 
+    }
+
+
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveInFile();
+        habitArrayList.updateHabitList(habitList);
+    }
+
+
+    // Display Dialog of Days of Week
     public void addHabbitMenu() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -131,12 +167,20 @@ public class MainActivity extends AppCompatActivity {
                 setResult(RESULT_OK);
                 String thename = habitName.getText().toString();
                 Habit newHabit = new Habit(thename);
-                habitList.add(newHabit);
 
 
-                saveInFile();
-                //habitadapter.notifyDataSetChanged();
+                secondHabbitMenu(newHabit,thename);
                 dialog.dismiss();
+
+
+
+            }
+        })
+
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                //  Your code when user clicked on Cancel
 
             }
         });
@@ -144,10 +188,45 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
+    //http://www.learn-android-easily.com/2013/01/adding-check-boxes-in-dialog.html
+    public void secondHabbitMenu(Habit newHabit, final String thename) {
+        final Habit habit = newHabit;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Set the days of the week");
+        builder.setMultiChoiceItems(days, null,
+                new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int indexSelected,
+                                        boolean isChecked) {
+                        if (isChecked) {
+                            habit.setday(indexSelected);
+                        }
 
-    private void saveInFile() {
+                    }
+    })
+
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        habitList.add(habit);
+                        adapter.notifyDataList(thename);
+                        saveInFile();
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        //  Your code when user clicked on Cancel
+
+                    }
+                });
+        builder.show();
+    }
+
+
+   private void saveInFile() {
         try {
-
             FileOutputStream fos = openFileOutput(FILENAME,0);
             OutputStreamWriter writer = new OutputStreamWriter(fos);
             Gson gson = new Gson();
@@ -165,14 +244,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void initateList(){
-        for(Habit tempHabit: habitList) {
-            testList.add(tempHabit.getName());
-        }
-    }
-
-
-
     private void loadFromFile() {
 
         try {
@@ -183,6 +254,7 @@ public class MainActivity extends AppCompatActivity {
             //Code taken from http://stackoverflow.com/questions/12384064/gson-convert-from-json-to-a-typed-arraylistt Sept.22,2016
             Type listType = new TypeToken<ArrayList<Habit>>(){}.getType();
             habitList = gson.fromJson(in, listType);
+            habitArrayList.updateHabitList(habitList);
 
 
         } catch (FileNotFoundException e) {
@@ -196,13 +268,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void deleteHabit(String habitName) {
-        for (Habit tempHabit : habitList) {
-            if(tempHabit.getName() == habitName) {
-                habitList.remove(habitName);
-            }
-        }
-    }
 
 
 

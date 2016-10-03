@@ -15,26 +15,31 @@ public class Habit implements Serializable{
     private static final long serialVersionUID = 1L;
 
     private ArrayList<String> Habits = new ArrayList();
+    private ArrayList<Date> completedRecord;
+
+
     private String name;
     private int count;
     String dayofWeek;
     private boolean[] days;
     private Calendar calendar = Calendar.getInstance();
-    //SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.CANADA);
-
+    private Date date;
 
     public Habit(String name) {
         this.name = name;
-       // this.dayofWeek = dayFormat.format(calendar.getTime());  // Day of Week in String eg. "Monday"
-        this.days = new boolean[7];                             // Days of Week in Boolean form
-        this.count = 0;                                         // Amount Completed
+        this.days = new boolean[7];                                 // Days of Week in Boolean form
+        this.count = 0;                                             // Amount Completed
+        this.completedRecord = new ArrayList<>();
+        this.date = new Date();
+
     }
 
-    public Habit(String name, String dayofWeek){
+    public Habit(String name, Date date){
         this.name = name;
         this.dayofWeek = dayofWeek;
         this.days = new boolean[7];
         this.count = 0;
+        this.date = date;
     }
 
 
@@ -56,10 +61,17 @@ public class Habit implements Serializable{
         this.days = days;
     }
 
+    public void setday(int position) {
+        days[position] = true;
+    }
 
+    public void addCompletion() {
+        this.completedRecord.add(new Date());
+    }
 
-
-
+    public void setCompletedRecord(ArrayList<Date> date){
+        completedRecord = date;
+    }
 
     // Add Count
 
@@ -67,16 +79,27 @@ public class Habit implements Serializable{
         count = count+1;
     }
 
+    // remove completions
 
+    public void removeCompletion(int position) {
+        completedRecord.remove(position);
+    }
 
     // getters
+
+    public ArrayList<Date> getCompletedRecord() {
+        return this.completedRecord;
+    }
+
+
 
     public String getName(){
         return this.name;
     }
 
-    public String getDayofWeek(){
-        return this.dayofWeek;
+    public boolean getDayOfWeek(int position){
+
+        return days[position];
     }
 
     public int getCount(){
@@ -86,7 +109,6 @@ public class Habit implements Serializable{
     public boolean[] getDays(){
         return this.days;
     }
-
 
 
 }
