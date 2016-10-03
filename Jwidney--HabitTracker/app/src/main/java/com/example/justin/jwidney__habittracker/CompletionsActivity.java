@@ -26,7 +26,7 @@ public class CompletionsActivity extends MainActivity{
     private ArrayList<String> listviewarray = new ArrayList<String>();
     private CompletionAdapter adapter;
     private ArrayList<Habit> habitList = new ArrayList<Habit>();
-    private DateFormat df = new SimpleDateFormat("MM/dd HH:mm:ss");         // format Date objects
+    private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");         // format Date objects
 
 
     @Override
